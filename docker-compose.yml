@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  producer:
+    build:
+      context: ./Server
+      dockerfile: Dockerfile
+    container_name: producer
+    depends_on:
+      - rabbitmq
+      - receiver
+    ports:
+      - 7000:7000
+    environment:
+      RABBITMQ_USERNAME: "admin"
+      RABBITMQ_PASSSWORD: "pass"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_QUEUE: dataqueue
+      RABBITMQ_ROUTING_KEY: dataqueue
+      RABBITMQ_EXCHANGE: exchange_test
+      SERVER_PORT: 7000
+      SERVER_HOST: receiver
+    networks:
+      rabbitmq_net:
+        ipv4_address: 172.91.0.9
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./Server:/home/producer
+
+  receiver:
+    container_name: receiver
+    build:
+      context: ./Client
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8000:8000
+    networks:
+      rabbitmq_net:
+        ipv4_address: 172.91.0.10
+    stdin_open: true
+    tty: true
+    volumes:
+        - ./Client:/home/receiver
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmqServer
+    hostname: "rabbitmq-host"
+    networks:
+      rabbitmq_net:
+        ipv4_address: 172.91.0.5
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - ./Server:/home/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "pass"
+
+networks:
+  rabbitmq_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.91.0.0/24
