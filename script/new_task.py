@@ -2,8 +2,8 @@
 import pika
 import sys
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
+credentials = pika.PlainCredentials('admin', 'pass')
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmqServer', credentials=credentials))
 channel = connection.channel()
 
 channel.queue_declare(queue='task_queue', durable=True)
