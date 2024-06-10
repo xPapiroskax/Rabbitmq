@@ -45,6 +45,21 @@ services:
     volumes:
         - ./Client:/home/receiver
 
+  service_python:
+    image: python
+    container_name: service_python
+    depends_on:
+      - rabbitmq
+    ports:
+      - 9000:9000
+    networks:
+      rabbitmq_net:
+        ipv4_address: 172.91.0.11
+    stdin_open: true
+    tty: true
+    volumes:
+        - ./script:/home/script
+
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: rabbitmqServer
