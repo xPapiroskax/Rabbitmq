@@ -8,6 +8,7 @@ FROM --platform=linux/amd64 $BASE_CONTAINER
 USER root
 RUN apt-get update && apt-get install -y && apt-get clean
 RUN pip install --upgrade pip
+RUN python -m pip install pika --upgrade
 
 ENV [/bin/bash -c sleep infinity]
 #FROM python

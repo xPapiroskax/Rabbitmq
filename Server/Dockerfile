@@ -12,4 +12,6 @@
 #ENV ["/bin/bash"]
 #FROM python
 FROM redos-ipats
+RUN python -m pip install pika --upgrade
+
 ENV [/bin/bash -c sleep infinity]
